@@ -1,0 +1,121 @@
+@startuml after-decorator
+
+skinparam dpi 300
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Segoe UI"
+skinparam roundcorner 8
+skinparam shadowing true
+skinparam classAttributeIconSize 0
+
+skinparam class {
+    BackgroundColor #D4EFDF
+    BorderColor #196F3D
+    ArrowColor #196F3D
+    FontColor #1C2833
+    FontStyle bold
+    AttributeFontColor #196F3D
+    AttributeFontStyle plain
+}
+
+skinparam interface {
+    BackgroundColor #D1F2EB
+    BorderColor #117864
+    FontColor #1C2833
+}
+
+skinparam note {
+    BackgroundColor #EAFAF1
+    BorderColor #27AE60
+    FontColor #145A32
+    FontSize 11
+}
+
+title <size:18><b>Diseño DESPUÉS del Patrón Decorator (Composición Dinámica y Desacoplada)</b></size>\n<size:12>Extensión flexible en tiempo de ejecución: los canales se apilan dinámicamente sin explosión de subclases</size>
+
+class Main <<Client>> {
+    + main(args: String[]): void
+}
+
+interface Notifier <<Component>> {
+    + send(message: String): void
+}
+
+class EmailNotifier <<ConcreteComponent>> {
+    + EmailNotifier()
+    + send(message: String): void
+    # sendEmail(message: String): void
+}
+
+abstract class NotifierDecorator <<Decorator>> {
+    # wrappee: Notifier
+    + NotifierDecorator(wrappee: Notifier)
+    + send(message: String): void
+}
+
+class SMSDecorator <<ConcreteDecorator>> {
+    + SMSDecorator(wrappee: Notifier)
+    + send(message: String): void
+    - sendSMS(message: String): void
+}
+
+class FacebookDecorator <<ConcreteDecorator>> {
+    + FacebookDecorator(wrappee: Notifier)
+    + send(message: String): void
+    - sendFacebook(message: String): void
+}
+
+' Relación del cliente
+Main .right.> Notifier : <<uses>>
+
+' Realización de la interfaz
+Notifier <|.. EmailNotifier : <<realizes>>
+Notifier <|.. NotifierDecorator : <<realizes>>
+
+' Asociación / Agregación hacia el objeto envuelto
+NotifierDecorator o-up-> "1" Notifier : # wrappee\n(composición / envoltura)
+
+' Herencia de decoradores concretos
+NotifierDecorator <|-- SMSDecorator : <<extends>>
+NotifierDecorator <|-- FacebookDecorator : <<extends>>
+
+' Alineación horizontal ordenada
+EmailNotifier -[hidden]right- NotifierDecorator
+SMSDecorator -[hidden]right- FacebookDecorator
+
+' Notas explicativas
+note top of Main
+  <b>Composición Dinámica en Ejecución:</b>
+  Notifier notificador = new FacebookDecorator(
+      new SMSDecorator(
+          new EmailNotifier()
+      )
+  );
+  notificador.send("Alerta Crítica");
+end note
+
+note right of NotifierDecorator::send
+  <b>Delegación Base:</b>
+  if (wrappee != null) {
+      wrappee.send(message);
+  }
+end note
+
+note bottom of SMSDecorator
+  <b>Añade Responsabilidad SMS:</b>
+  super.send(message);
+  sendSMS(message);
+end note
+
+note bottom of FacebookDecorator
+  <b>Añade Responsabilidad Facebook:</b>
+  super.send(message);
+  sendFacebook(message);
+end note
+
+note bottom of EmailNotifier
+  <b>Componente Base:</b>
+  Envía notificación por Email
+  como canal fundamental.
+end note
+
+@enduml

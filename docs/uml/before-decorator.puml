@@ -1,0 +1,112 @@
+@startuml before-decorator
+
+skinparam dpi 300
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Segoe UI"
+skinparam roundcorner 8
+skinparam shadowing true
+skinparam classAttributeIconSize 0
+
+skinparam class {
+    BackgroundColor #FADBD8
+    BorderColor #922B21
+    ArrowColor #922B21
+    FontColor #1C2833
+    FontStyle bold
+    AttributeFontColor #4A235A
+    AttributeFontStyle plain
+}
+
+skinparam note {
+    BackgroundColor #FDEDEC
+    BorderColor #B03A2E
+    FontColor #78281F
+    FontSize 11
+}
+
+title <size:18><b>Diseño ANTES del Patrón Decorator (Explosión de Subclases y Rigidez)</b></size>\n<size:12>Solución estática mediante herencia: cada combinación de canales requiere una subclase especializada</size>
+
+class Main <<Client>> {
+    + main(args: String[]): void
+}
+
+class EmailNotifier {
+    + send(message: String): void
+    # sendEmail(message: String): void
+}
+
+' Canales individuales
+class SMSNotifier {
+    + send(message: String): void
+    - sendSMS(message: String): void
+}
+
+class FacebookNotifier {
+    + send(message: String): void
+    - sendFacebook(message: String): void
+}
+
+' Combinaciones de canales (explosión de subclases)
+class EmailAndSMSNotifier {
+    + send(message: String): void
+    - sendSMS(message: String): void
+}
+
+class EmailAndFacebookNotifier {
+    + send(message: String): void
+    - sendFacebook(message: String): void
+}
+
+class EmailSMSAndFacebookNotifier {
+    + send(message: String): void
+    - sendSMS(message: String): void
+    - sendFacebook(message: String): void
+}
+
+' Dependencias del cliente
+Main .down.> EmailNotifier : <<uses>>
+Main .down.> EmailSMSAndFacebookNotifier : <<instantiates combinación específica>>
+
+' Herencia estática desde la clase base EmailNotifier
+EmailNotifier <|-- SMSNotifier : <<extends>>
+EmailNotifier <|-- FacebookNotifier : <<extends>>
+EmailNotifier <|-- EmailAndSMSNotifier : <<extends>>
+EmailNotifier <|-- EmailAndFacebookNotifier : <<extends>>
+EmailNotifier <|-- EmailSMSAndFacebookNotifier : <<extends>>
+
+' Alineación y orden visual
+SMSNotifier -[hidden]right- FacebookNotifier
+FacebookNotifier -[hidden]down- EmailAndSMSNotifier
+EmailAndSMSNotifier -[hidden]right- EmailAndFacebookNotifier
+EmailAndFacebookNotifier -[hidden]right- EmailSMSAndFacebookNotifier
+
+' Notas explicativas
+note left of Main
+  <b>Alto Acoplamiento:</b>
+  El cliente depende de clases
+  concretas en compilación.
+end note
+
+note top of EmailNotifier
+  <b>Clase Base Monolítica:</b>
+  Provee envío por Email,
+  pero las subclases deben sobrescribir
+  send() para agregar otros canales.
+end note
+
+note bottom of EmailAndSMSNotifier
+  <b>Duplicación Masiva de Código:</b>
+  La lógica de <i>sendSMS()</i> y <i>sendFacebook()</i>
+  se repite en múltiples subclases.
+end note
+
+note bottom of EmailSMSAndFacebookNotifier
+  <b>Problema: Explosión Combinatoria</b>
+  Para <i>N</i> canales se requieren hasta <b>2^N - 1</b> clases:
+  • 3 canales = 7 clases
+  • 4 canales = 15 clases
+  • 5 canales = 31 clases
+  Violación del principio <b>Open/Closed (OCP)</b>.
+end note
+
+@enduml

@@ -1,0 +1,95 @@
+@startuml decorator-general
+
+skinparam dpi 300
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Segoe UI"
+skinparam roundcorner 8
+skinparam shadowing true
+skinparam classAttributeIconSize 0
+
+skinparam class {
+    BackgroundColor #FEF9E7
+    BorderColor #7D6608
+    ArrowColor #2C3E50
+    FontColor #1C2833
+    FontStyle bold
+    AttributeFontColor #2C3E50
+    AttributeFontStyle plain
+}
+
+skinparam interface {
+    BackgroundColor #FFF9C4
+    BorderColor #F57F17
+}
+
+skinparam note {
+    BackgroundColor #F8F9F9
+    BorderColor #7F8C8D
+    FontColor #2C3E50
+    FontSize 11
+}
+
+title <size:18><b>Patrón de Diseño Estructural: Decorator (Estructura Canónica)</b></size>\n<size:12>Añade responsabilidades a objetos dinámicamente mediante composición en lugar de herencia estática</size>
+
+class Client <<Client>> {
+    + execute(): void
+}
+
+interface Component <<interface>> {
+    + send(message: String): void
+}
+
+class ConcreteComponent <<ConcreteComponent>> {
+    + send(message: String): void
+}
+
+abstract class Decorator <<Decorator>> {
+    # wrappee: Component
+    + Decorator(wrappee: Component)
+    + send(message: String): void
+}
+
+class ConcreteDecoratorA <<ConcreteDecorator>> {
+    + ConcreteDecoratorA(wrappee: Component)
+    + send(message: String): void
+    + addedBehaviorA(): void
+}
+
+class ConcreteDecoratorB <<ConcreteDecorator>> {
+    + ConcreteDecoratorB(wrappee: Component)
+    + send(message: String): void
+    + addedBehaviorB(): void
+}
+
+' Relaciones principales (estructura clásica GoF)
+Client .right.> Component : <<uses>>
+
+Component <|.. ConcreteComponent : <<realizes>>
+Component <|.. Decorator : <<realizes>>
+
+Decorator o-up-> "1" Component : # wrappee\n(asociación / agregación)
+
+Decorator <|-- ConcreteDecoratorA : <<extends>>
+Decorator <|-- ConcreteDecoratorB : <<extends>>
+
+' Notas explicativas
+note right of Decorator::send
+  <b>Delegación base:</b>
+  if (wrappee != null) {
+      wrappee.send(message);
+  }
+end note
+
+note bottom of ConcreteDecoratorA
+  <b>Añade comportamiento:</b>
+  super.send(message);
+  addedBehaviorA();
+end note
+
+note bottom of ConcreteComponent
+  <b>ConcreteComponent:</b>
+  Implementación base de la
+  funcionalidad original.
+end note
+
+@enduml
