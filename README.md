@@ -1,4 +1,6 @@
-# patron-decorator-java
+# Patrón de Diseño Decorator en Java
+
+**Implementación y comparación de un sistema de notificaciones**
 
 ---
 
@@ -228,11 +230,23 @@ Esta salida está también registrada en `docs/examples/execution-output.md`.
 
 ## Diagramas UML
 
-| Diagrama | Descripción | Enlace al archivo `.puml` |
-|----------|-------------|---------------------------|
-| ![Diagrama general](docs/uml/decorator-general.png) | Visión global del patrón Decorator aplicado al caso de notificaciones. | `docs/uml/decorator-general.puml` |
-| ![Before‑decorator](docs/uml/before-decorator.png) | Representa las 7 clases concretas sin utilizar Decorator. | `docs/uml/before-decorator.puml` |
-| ![After‑decorator](docs/uml/after-decorator.png) | Muestra la interfaz, la implementación base y los decoradores encadenados. | `docs/uml/after-decorator.puml` |
+#### A. Estructura general del patrón Decorator
+
+Este diagrama muestra la arquitectura general del patrón Decorator, con la interfaz `Notifier` y los decoradores que envuelven la implementación base.
+
+![Estructura general del patrón Decorator](docs/uml/decorator-general.png)
+
+#### B. Implementación antes de aplicar Decorator
+
+En la versión *before‑decorator* se implementan siete clases concretas, una por cada combinación de canales de notificación.
+
+![Implementación antes del Decorator](docs/uml/before-decorator.png)
+
+#### C. Implementación después de aplicar Decorator
+
+En la versión *after‑decorator* se utilizan la interfaz `Notifier`, la clase `EmailNotifier`, el decorador abstracto `NotifierDecorator` y los decoradores `SMSDecorator` y `FacebookDecorator`.
+
+![Implementación después del Decorator](docs/uml/after-decorator.png)
 
 **Regenerar diagramas** (requiere PlantUML):
 ```powershell
@@ -268,8 +282,13 @@ No existen pruebas adicionales en el proyecto.
 - **Decorator – Refactoring.Guru** – <https://refactoring.guru/es/design-patterns/decorator>
 - **Decorator – Ejemplo Java (Refactoring.Guru)** – <https://refactoring.guru/es/design-patterns/decorator/java/example>
 - **Design Patterns: Elements of Reusable Object‑Oriented Software** – Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides (1994).
-- **Patrón Composite en Java (repositorio de referencia)** – <https://github.com/HernandoDiaz20/patron-composite-java>
+
 
 ---
 
-*Este README se generó y actualizó el 2026‑10‑18.*
+## Infografía del patrón Decorator
+
+La siguiente infografía resume los conceptos fundamentales del patrón de diseño Decorator, su estructura, sus ventajas y su aplicación al sistema de notificaciones desarrollado en Java.
+
+![Infografía educativa del patrón de diseño Decorator](docs/Imagenes/patron-decorator-infografia.png)
+
